@@ -1,5 +1,7 @@
 Game = {
 	orientated: true,
+	backgroundX: 0,
+	backgroundY: 0,
 
 	States: {},
 	Prefabs: {}
@@ -10,6 +12,7 @@ Game.States.Boot = function(game){
 
 Game.States.Boot.prototype = {
 	preload: function(){
+		this.load.image('background', 'assets/background.png');
 		this.load.image('preloader', 'assets/preloader.gif');
 	},
 
@@ -18,7 +21,7 @@ Game.States.Boot.prototype = {
         this.scale.pageAlignHorizontally = true;
         this.scale.pageAlignVertically = true;
 
-        // Block landscape on mobile devices - Ratio Exception for square resolution (BB Q10) : See callbakcs
+        // Block portrait on mobile devices
         if(!this.game.device.desktop){
         	this.scale.forceOrientation(false, true);
         	this.scale.enterIncorrectOrientation.add(this.enterIncorrectOrientation, this);
@@ -51,22 +54,27 @@ Game.States.Preloader = function(game){
 
 Game.States.Preloader.prototype = {
 	preload: function(){
-		this.game.stage.backgroundColor = '#000000';
+		// Background
+		this.game.stage.backgroundColor = '#5e3f6b';
+		this.background = this.game.add.tileSprite(0, 0, 480, 320, 'background');
+		this.background.autoScroll(-100, -20);
 
 		this.preloadBar = this.game.add.sprite(this.game.width/2, this.game.height/2, 'preloader');
 		this.preloadBar.anchor.setTo(0.5, 0.5);
 		this.load.setPreloadSprite(this.preloadBar);
 		this.load.onLoadComplete.addOnce(this.onLoadComplete, this);
 
-		this.load.image('badge', 'assets/badge.png');
+		// Images
+		this.load.image('cursor', 'assets/cursor.png');
+		this.load.image('hero', 'assets/hero.png');
+		this.load.image('pausePanel', 'assets/pause-panel.png');
 
-		// Images - this.load.image(key, url);
+		// Spritesheets
+		this.load.spritesheet('btnMenu', 'assets/btn-menu.png', 190, 49, 2);
+		this.load.spritesheet('btn', 'assets/btn.png', 49, 49, 6);
 
-		// Spritesheets - this.load.spritesheet(key, url, frameWidth, frameHeight, numberOfFrames);
-
-		// Fonts - this.load.bitmapFont(key, textureURL, xmlURL, xmlData, xSpacing, ySpacing);
-
-		// Audio - this.load.audio(key, urls, autoDecode);
+		// Fonts
+		this.load.bitmapFont('kenpixelblocks', 'assets/fonts/kenpixelblocks.png', 'assets/fonts/kenpixelblocks.fnt');
 	},
 
 	create: function(){

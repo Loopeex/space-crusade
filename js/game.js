@@ -1,6 +1,6 @@
 window.onload = function(){
 	// Create phaser game
-	var phaser = new Phaser.Game(320, 460, Phaser.AUTO, 'game');
+	var phaser = new Phaser.Game(480, 320, Phaser.AUTO, 'game');
 
 	// Load states
 	phaser.state.add('Boot', Game.States.Boot);
