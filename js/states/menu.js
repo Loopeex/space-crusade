@@ -14,7 +14,7 @@ Game.States.Menu.prototype = {
 	create: function(){
 		// Background
 		this.background = this.game.add.tileSprite(0, 0, 480, 320, 'background');
-		this.background.autoScroll(-100, -20);
+		this.background.autoScroll(-150, -20);
 		this.background.tilePosition.x = Game.backgroundX;
 		this.background.tilePosition.y = Game.backgroundY;
 

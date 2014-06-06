@@ -72,6 +72,7 @@ Game.States.Preloader.prototype = {
 		// Spritesheets
 		this.load.spritesheet('btnMenu', 'assets/btn-menu.png', 190, 49, 2);
 		this.load.spritesheet('btn', 'assets/btn.png', 49, 49, 6);
+		this.load.spritesheet('bullet', 'assets/bullet.png', 29, 6, 1);
 
 		// Fonts
 		this.load.bitmapFont('kenpixelblocks', 'assets/fonts/kenpixelblocks.png', 'assets/fonts/kenpixelblocks.fnt');
@@ -83,7 +84,8 @@ Game.States.Preloader.prototype = {
 
 	update: function(){
 		if(this.ready){
-			this.game.state.start('Menu');
+			//this.game.state.start('Menu');
+			this.game.state.start('Play');
 		}
 	},
 
