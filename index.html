@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="description" content="description" />
+		<meta name="keywords" content="tags" />
+		<meta http-equiv="X-UA-Compatible" content="chrome=1, IE=9">
+		<link rel="apple-touch-icon" href="img/game-icon.png">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+		<meta name="viewport" content="user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1, width=device-width, minimal-ui=1">
+		<!--[if lt IE 9]>
+			<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<style>
+			body{
+				margin:0;
+				padding:0;
+				background-color:#333;
+			}
+			#game{
+				margin:0 auto;
+			}
+			#orientation{
+				height:100%;
+				width:100%;
+				left:0;
+				top:0;
+				display:none;
+				z-index:100;
+				position:fixed;
+				background:#000 url(img/orientation-portrait.jpg) center center no-repeat;
+			}
+		</style>
+		<title>Game</title>
+	</head>
+	<body>
+		<div id="game"></div>
+		<div id="orientation"></div>
+		<script src="js/phaser.min.js"></script>
+		<script src="js/game.min.js"></script>
+	</body>
+</html>
