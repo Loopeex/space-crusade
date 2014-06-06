@@ -72,9 +72,15 @@ Game.States.Play.prototype = {
 		if(this.paused){
 			this.paused = false;
 
+			// Active ship following pointer
 			this.hero.follow = true;
 			this.hero.body.collideWorldBounds = true;
 
+			// Restart follow position
+			this.game.input.x = this.hero.x;
+			this.game.input.y = this.hero.y;
+
+			// Show pause button
 			this.game.add.tween(this.btnPause).to({alpha:1}, 600, Phaser.Easing.Exponential.Out, true);
 		}
 	},

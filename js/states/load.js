@@ -23,7 +23,7 @@ Game.States.Boot.prototype = {
 
         // Block portrait on mobile devices
         if(!this.game.device.desktop){
-        	this.scale.forceOrientation(false, true);
+        	this.scale.forceOrientation(true, false);
         	this.scale.enterIncorrectOrientation.add(this.enterIncorrectOrientation, this);
         	this.scale.leaveIncorrectOrientation.add(this.leaveIncorrectOrientation, this);
         }
