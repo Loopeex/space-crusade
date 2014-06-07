@@ -33,8 +33,8 @@ Game.Prefabs.Hero.prototype.update = function(){
 		if(distance > this.minDistance){
 			rotation = this.game.math.angleBetween(this.x, this.y, this.target.x, this.target.y);
 
-			this.body.velocity.x = Math.cos(rotation) * this.speed;
-			this.body.velocity.y = Math.sin(rotation) * this.speed;
+			this.body.velocity.x = Math.cos(rotation) * this.speed * Math.min(distance / 120, 2);
+			this.body.velocity.y = Math.sin(rotation) * this.speed * Math.min(distance / 120, 2);
 		}else{
 			this.body.velocity.setTo(0, 0);
 		}

@@ -35,8 +35,8 @@ Game.States.Boot.prototype = {
 
 	enterIncorrectOrientation: function(){
 		Game.orientated = false;
-		this.game.paused = true;
 		document.getElementById('orientation').style.display = 'block';
+		this.game.paused = true;
 	},
 
 	leaveIncorrectOrientation: function(){
@@ -68,6 +68,7 @@ Game.States.Preloader.prototype = {
 		this.load.image('cursor', 'assets/cursor.png');
 		this.load.image('hero', 'assets/hero.png');
 		this.load.image('pausePanel', 'assets/pause-panel.png');
+		this.load.image('enemy1', 'assets/enemy1.png');
 
 		// Spritesheets
 		this.load.spritesheet('btnMenu', 'assets/btn-menu.png', 190, 49, 2);

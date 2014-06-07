@@ -9,6 +9,9 @@ Game.States.Play = function(game){
 	this.bullets;
 	this.lastBulletShotAt;
 	this.shotDelay = 300;
+
+	this.enemies;
+	this.enemiesGenerator;
 };
 
 Game.States.Play.prototype = {
@@ -18,9 +21,13 @@ Game.States.Play.prototype = {
 		this.background.autoScroll(-150, -20);
 		this.background.tilePosition.x = Game.backgroundX;
 		this.background.tilePosition.y = Game.backgroundY;
+		this.game.add.tween(this.background).to({alpha: 0.2}, 5000, Phaser.Easing.Linear.NONE, true, 0, Number.POSITIVE_INFINITY, true);
 
 		// Bullets group
 		this.bullets = this.game.add.group();
+
+		// Enemies
+		this.enemies = this.game.add.group();
 
 		// Hero
 		this.hero = new Game.Prefabs.Hero(this.game, -45, this.game.height/2, this.game.input);
@@ -36,7 +43,7 @@ Game.States.Play.prototype = {
 		this.game.add.existing(this.pausePanel);
 
 		// Enter play mode after init state
-		this.game.time.events.add(Phaser.Timer.SECOND*1.5, this.playGame, this);
+		this.game.time.events.add(Phaser.Timer.SECOND*1.5, this.initGame, this);
 
 		this.game.time.advancedTiming = true;
 	    this.fpsText = this.game.add.text(
@@ -66,6 +73,16 @@ Game.States.Play.prototype = {
 			this.pausePanel.show();
 			this.game.add.tween(this.btnPause).to({alpha:0}, 600, Phaser.Easing.Exponential.Out, true);
 		}
+	},
+
+	initGame: function(){
+		// Generate enemies
+		this.generateEnemies();
+		this.enemiesGenerator = this.game.time.events.loop(Phaser.Timer.SECOND * 2, this.generateEnemies, this);
+		this.enemiesGenerator.timer.start();
+
+		// Play
+		this.playGame();
 	},
 
 	playGame: function(){
@@ -111,5 +128,14 @@ Game.States.Play.prototype = {
 			}
 			bullet.reset(this.hero.x+10, this.hero.y - ((this.hero.height-5)/2)*i);
 		}
+	},
+
+	generateEnemies: function(){
+		var Enemies = this.enemies.getFirstExists(false);
+
+		if(!Enemies){
+			Enemies = new Game.Prefabs.Enemies(this.game, this.enemies, new Phaser.Point(-200, 100));
+		}
+		Enemies.reset();
 	}
 };
