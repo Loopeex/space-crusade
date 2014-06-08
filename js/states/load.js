@@ -2,6 +2,7 @@ Game = {
 	orientated: true,
 	backgroundX: 0,
 	backgroundY: 0,
+	paused: true,
 
 	States: {},
 	Prefabs: {}

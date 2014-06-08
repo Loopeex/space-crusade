@@ -5,6 +5,10 @@ Game.Prefabs.Bullet = function(game, x, y){
 	// Centered anchor
 	this.anchor.setTo(0.5, 0.5);
 
+	// Save vars for velocity when game is pauses
+	this.savedVelocityX = 0;
+	this.savedVelocityY = 0;
+
 	// Kill when out of world
 	this.checkWorldBounds = true;
 	this.outOfBoundsKill = true;
@@ -17,5 +21,9 @@ Game.Prefabs.Bullet.prototype = Object.create(Phaser.Sprite.prototype);
 Game.Prefabs.Bullet.constructor = Game.Prefabs.Bullet;
 
 Game.Prefabs.Bullet.prototype.update = function(){
-	this.body.velocity.x = 300;
+	if(!Game.paused){
+		this.body.velocity.x = 300;
+	}else{
+		this.body.velocity.x = 0;
+	}
 };

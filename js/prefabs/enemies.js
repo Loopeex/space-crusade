@@ -31,6 +31,7 @@ Game.Prefabs.Enemies.prototype.reset = function(){
 		enemy.y = 300;
 		enemy.checkWorldBounds = false;
 		enemy.dead = false;
+		enemy.alpha = 1;
 		i++;
 	}, this);
 };

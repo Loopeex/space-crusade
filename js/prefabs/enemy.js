@@ -26,25 +26,33 @@ Game.Prefabs.Enemy.prototype = Object.create(Phaser.Sprite.prototype);
 Game.Prefabs.Enemy.constructor = Game.Prefabs.Enemy;
 
 Game.Prefabs.Enemy.prototype.update = function(){
-	// Change velocity to follow the target
-	var distance, rotation;
-	distance = this.game.math.distance(this.x, this.y, this.target.x, this.target.y);
+	if(!Game.paused){
+		// Change velocity to follow the target
+		var distance, rotation;
+		distance = this.game.math.distance(this.x, this.y, this.target.x, this.target.y);
 
-	if(distance > this.minDistance){
-		rotation = this.game.math.angleBetween(this.x, this.y, this.target.x, this.target.y);
+		if(distance > this.minDistance){
+			rotation = this.game.math.angleBetween(this.x, this.y, this.target.x, this.target.y);
 
-		this.body.velocity.x = Math.cos(rotation) * this.speed;
-		this.body.velocity.y = Math.sin(rotation) * this.speed;
-	}else{
-		this.body.velocity.setTo(0, 0);
-	}
+			this.body.velocity.x = Math.cos(rotation) * this.speed;
+			this.body.velocity.y = Math.sin(rotation) * this.speed;
+		}else{
+			this.body.velocity.setTo(0, 0);
+		}
 
-	// Active enemy
-	if(this.x < this.game.width && !this.checkWorldBounds){
-		this.checkWorldBounds = true;
+		// Active enemy
+		if(this.x < this.game.width && !this.checkWorldBounds){
+			this.checkWorldBounds = true;
+		}
 	}
 };
 
 Game.Prefabs.Enemy.prototype.die = function(){
 	this.dead = true;
+	this.alpha = 0;
+};
+
+Game.Prefabs.Enemy.prototype.pause = function(){
+	this.body.velocity.x = 0;
+	this.body.velocity.y = 0;
 };

@@ -2,7 +2,6 @@ Game.States.Play = function(game){
 	this.background;
 	this.hero;
 
-	this.paused = true;
 	this.btnPause;
 	this.pausePanel;
 
@@ -54,8 +53,9 @@ Game.States.Play.prototype = {
 	update: function(){
 		var bullet;
 
-		if(!this.paused){
+		if(!Game.paused){
 			this.shootBullet();
+			this.checkCollisions();
 		}
 
 		this.fpsText.setText(this.game.time.fps + ' FPS');
@@ -63,16 +63,6 @@ Game.States.Play.prototype = {
 
 	shutdown: function(){
 		
-	},
-
-	pauseGame: function(){
-		if(!this.paused){
-			this.paused = true;
-			this.hero.follow = false;
-
-			this.pausePanel.show();
-			this.game.add.tween(this.btnPause).to({alpha:0}, 600, Phaser.Easing.Exponential.Out, true);
-		}
 	},
 
 	initGame: function(){
@@ -85,13 +75,35 @@ Game.States.Play.prototype = {
 		this.playGame();
 	},
 
+	pauseGame: function(){
+		if(!Game.paused){
+			Game.paused = true;
+			this.hero.follow = false;
+
+			// Pause enemies generator
+			this.enemiesGenerator.timer.pause();
+
+			// Freeze enemies
+			this.enemies.forEach(function(group){
+				group.callAll('pause');
+			}, this);
+
+			// Show pause panel
+			this.pausePanel.show();
+			this.game.add.tween(this.btnPause).to({alpha:0}, 600, Phaser.Easing.Exponential.Out, true);
+		}
+	},
+
 	playGame: function(){
-		if(this.paused){
-			this.paused = false;
+		if(Game.paused){
+			Game.paused = false;
 
 			// Active ship following pointer
 			this.hero.follow = true;
 			this.hero.body.collideWorldBounds = true;
+
+			// Resume enemies generator
+			this.enemiesGenerator.timer.resume();
 
 			// Restart follow position
 			this.game.input.x = this.hero.x;
@@ -137,5 +149,18 @@ Game.States.Play.prototype = {
 			Enemies = new Game.Prefabs.Enemies(this.game, this.enemies, new Phaser.Point(-200, 100));
 		}
 		Enemies.reset();
+	},
+
+	checkCollisions: function(){
+		this.enemies.forEach(function(enemy){
+			this.game.physics.arcade.overlap(this.bullets, enemy, this.killEnemy, null, this);
+		}, this);
+	},
+
+	killEnemy: function(hero, enemy){
+		//console.log('ok');
+		if(!enemy.dead){
+			enemy.die();
+		}
 	}
 };
