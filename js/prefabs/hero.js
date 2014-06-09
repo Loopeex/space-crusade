@@ -11,6 +11,19 @@ Game.Prefabs.Hero = function(game, x, y, target){
 	// Speed
 	this.speed = 200;
 
+	// Hero lives
+	this.lives = 3;
+
+	// Hero shot delay
+	this.shotDelay = 300;
+
+	// Number of bullets per shoot
+	this.numBullets = 1;
+
+	// Hero shiled
+	this.shielded = false;
+	this.timerShield;
+
 	// Min distance from pointer
 	this.minDistance = 10;
 
@@ -41,4 +54,19 @@ Game.Prefabs.Hero.prototype.update = function(){
 	}else{
 		this.body.velocity.setTo(0, 0);
 	}
+};
+
+Game.Prefabs.Hero.prototype.enableShield = function(){
+	this.shielded = true;
+	this.timerShield = this.game.time.create(true);
+	this.timerShield.add(Phaser.Timer.SECOND*1, this.disabledShield, this);
+	this.timerShield.start();
+};
+
+Game.Prefabs.Hero.prototype.disabledShield = function(){
+	this.shielded = false;
+};
+
+Game.Prefabs.Hero.prototype.die = function(){
+
 };

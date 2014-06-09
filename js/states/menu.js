@@ -8,6 +8,8 @@ Game.States.Menu = function(game){
 	this.btnMoreGroup;
 	this.btnMore;
 	this.btnMoreText;
+
+	this.timerInit;
 };
 
 Game.States.Menu.prototype = {
@@ -56,7 +58,11 @@ Game.States.Menu.prototype = {
 		this.game.add.tween(this.btnPlayGroup).to({alpha:0}, 600, Phaser.Easing.Exponential.Out, true);
 		this.game.add.tween(this.btnMoreGroup).to({alpha:0}, 600, Phaser.Easing.Exponential.Out, true);
 
-		this.game.time.events.add(Phaser.Timer.SECOND*0.8, this.startGame, this);
+		//this.game.time.events.add(Phaser.Timer.SECOND*0.8, this.startGame, this);
+		this.timerInit = this.game.time.create(true);
+		this.timerInit.add(Phaser.Timer.SECOND*0.8, this.startGame, this);
+		this.timerInit.start();
+
 	},
 
 	startGame: function(){

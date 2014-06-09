@@ -7,10 +7,15 @@ Game.States.Play = function(game){
 
 	this.bullets;
 	this.lastBulletShotAt;
-	this.shotDelay = 300;
 
 	this.enemies;
 	this.enemiesGenerator;
+
+	this.timerInit;
+
+	this.livesGroup;
+	this.livesNum;
+	this.livesTween;
 };
 
 Game.States.Play.prototype = {
@@ -42,11 +47,22 @@ Game.States.Play.prototype = {
 		this.game.add.existing(this.pausePanel);
 
 		// Enter play mode after init state
-		this.game.time.events.add(Phaser.Timer.SECOND*1.5, this.initGame, this);
+		this.timerInit = this.game.time.create();
+		this.timerInit.add(Phaser.Timer.SECOND*1.5, this.initGame, this);
+		this.timerInit.start();
+
+		// Display lives
+		this.livesGroup = this.game.add.group();
+		this.livesGroup.add(this.game.add.sprite(0, 0, 'lives'));
+		this.livesGroup.add(this.game.add.sprite(20, 3, 'num', 0));
+		this.livesNum = this.game.add.sprite(35, 3, 'num', this.hero.lives+1);
+		this.livesGroup.add(this.livesNum);
+		this.livesGroup.x = 5;
+		this.livesGroup.y = 295;
 
 		this.game.time.advancedTiming = true;
 	    this.fpsText = this.game.add.text(
-	        20, 285, '', { font: '16px Arial', fill: '#ffffff' }
+	        410, 10, '', { font: '16px Arial', fill: '#ffffff' }
 	    );
 	},
 
@@ -62,13 +78,16 @@ Game.States.Play.prototype = {
 	},
 
 	shutdown: function(){
-		
+		this.bullets.destroy();
+		this.enemies.destroy();
+		this.hero.destroy();
+		Game.paused = true;
 	},
 
 	initGame: function(){
 		// Generate enemies
 		this.generateEnemies();
-		this.enemiesGenerator = this.game.time.events.loop(Phaser.Timer.SECOND * 2, this.generateEnemies, this);
+		this.enemiesGenerator = this.game.time.events.loop(Phaser.Timer.SECOND * 3, this.generateEnemies, this);
 		this.enemiesGenerator.timer.start();
 
 		// Play
@@ -125,20 +144,26 @@ Game.States.Play.prototype = {
 	shootBullet: function(){
 		// Check delay time
 		if(this.lastBulletShotAt === undefined) this.lastBulletShotAt = 0;
-		if(this.game.time.now - this.lastBulletShotAt < this.shotDelay){
+		if(this.game.time.now - this.lastBulletShotAt < this.hero.shotDelay){
 			return;
 		}
 		this.lastBulletShotAt = this.game.time.now;
 
-		// Create double bullets
-		var bullet;
-		for(var i=-1; i<2; i+=2){
+		// Create bullets
+		var bullet, bulletPosY;
+		for(var i=-1; i<this.hero.numBullets; i+=2){
 			bullet = this.bullets.getFirstExists(false);
 			if(!bullet){
 				bullet = new Game.Prefabs.Bullet(this.game, 0, 0);
 				this.bullets.add(bullet);
 			}
-			bullet.reset(this.hero.x+10, this.hero.y - ((this.hero.height-5)/2)*i);
+
+			bulletPosY = this.hero.y;
+			if(this.hero.numBullets > 1){
+				bulletPosY = this.hero.y - ((this.hero.height-5)/2)*i;
+			}
+
+			bullet.reset(this.hero.x+10, bulletPosY);
 		}
 	},
 
@@ -146,21 +171,56 @@ Game.States.Play.prototype = {
 		var Enemies = this.enemies.getFirstExists(false);
 
 		if(!Enemies){
-			Enemies = new Game.Prefabs.Enemies(this.game, this.enemies, new Phaser.Point(-200, 100));
+			Enemies = new Game.Prefabs.Enemies(this.game, this.enemies);
 		}
-		Enemies.reset();
+		Enemies.reset(this.game.rnd.integerInRange(50, 270), this.game.rnd.integerInRange(50, 270));
 	},
 
 	checkCollisions: function(){
+		// Enemies vs Bullets
 		this.enemies.forEach(function(enemy){
 			this.game.physics.arcade.overlap(this.bullets, enemy, this.killEnemy, null, this);
 		}, this);
+
+		// Hero vs Enemies
+		this.enemies.forEach(function(enemy){
+			this.game.physics.arcade.overlap(this.hero, enemy, this.killHero, null, this);
+		}, this);
 	},
 
-	killEnemy: function(hero, enemy){
-		//console.log('ok');
-		if(!enemy.dead){
+	killEnemy: function(bullet, enemy){
+		if(!enemy.dead && enemy.checkWorldBounds){
 			enemy.die();
+			bullet.kill();
 		}
+	},
+
+	killHero: function(hero, enemy){
+		if(!enemy.dead){
+			if(!this.hero.shielded){
+				// Update lives
+				this.hero.lives--;
+
+				if(this.hero.lives < 1){
+					this.hero.die();
+					this.gameOver();
+				}else{
+					this.hero.enableShield();
+
+					// Anim remaining lives
+					this.game.add.tween(this.livesNum).to({alpha:0, y: 8}, 200, Phaser.Easing.Exponential.Out, true).onComplete.add(function(){
+						this.livesNum.frame = this.hero.lives+1;
+						this.livesNum.y = -2;
+						this.game.add.tween(this.livesNum).to({alpha:1, y:3}, 200, Phaser.Easing.Exponential.Out, true);
+					}, this);
+				}
+			}else{
+				enemy.die();
+			}
+		}
+	},
+
+	gameOver: function(){
+		this.game.state.start('Menu');
 	}
 };

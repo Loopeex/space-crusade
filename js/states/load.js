@@ -70,11 +70,14 @@ Game.States.Preloader.prototype = {
 		this.load.image('hero', 'assets/hero.png');
 		this.load.image('pausePanel', 'assets/pause-panel.png');
 		this.load.image('enemy1', 'assets/enemy1.png');
+		this.load.image('explosion', 'assets/explosion.png');
+		this.load.image('lives', 'assets/lives.png');
 
 		// Spritesheets
 		this.load.spritesheet('btnMenu', 'assets/btn-menu.png', 190, 49, 2);
 		this.load.spritesheet('btn', 'assets/btn.png', 49, 49, 6);
 		this.load.spritesheet('bullet', 'assets/bullet.png', 29, 6, 1);
+		this.load.spritesheet('num', 'assets/num.png', 12, 11, 5);
 
 		// Fonts
 		this.load.bitmapFont('kenpixelblocks', 'assets/fonts/kenpixelblocks.png', 'assets/fonts/kenpixelblocks.fnt');

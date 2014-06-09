@@ -1,13 +1,10 @@
-Game.Prefabs.Enemies = function(game, parent, point){
+Game.Prefabs.Enemies = function(game, parent){
 	// Super call to Phaser.Group
 	Phaser.Group.call(this, game, parent);
 
-	// Enemies destination
-	this.point = point;
-
 	var enemy;
 	for(var i=0; i<5; i++){
-		enemy = this.add(new Game.Prefabs.Enemy(this.game, 0, 0, 'enemy1', enemy || this.point));
+		enemy = this.add(new Game.Prefabs.Enemy(this.game, 0, 0, 'enemy1', enemy || new Phaser.Point(0, 0)));
 		enemy.x = this.game.width + enemy.width/2 + i*(enemy.width + 10);
 		enemy.y = 300;
 	}
@@ -21,17 +18,17 @@ Game.Prefabs.Enemies.prototype.update = function(){
 	this.checkWorldBounds();
 };
 
-Game.Prefabs.Enemies.prototype.reset = function(){
+Game.Prefabs.Enemies.prototype.reset = function(from, to){
 	this.exists = true;
 
 	// Reset all enemies
 	var i = 0;
 	this.forEach(function(enemy){
-		enemy.x = this.game.width + enemy.width/2 + i*(enemy.width + 10);
-		enemy.y = 300;
-		enemy.checkWorldBounds = false;
-		enemy.dead = false;
-		enemy.alpha = 1;
+		if(i === 0){
+			enemy.resetTarget(to);
+		}
+
+		enemy.reload(i, from);
 		i++;
 	}, this);
 };
