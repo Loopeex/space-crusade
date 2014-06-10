@@ -18,6 +18,13 @@ Game.States.Boot.prototype = {
 	},
 
 	create: function(){
+		// Ratio
+		this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+        this.scale.minWidth = 480;
+        this.scale.minHeight = 320;
+        this.scale.maxWidth = 960;
+        this.scale.maxHeight = 640;
+
         // Center canvas
         this.scale.pageAlignHorizontally = true;
         this.scale.pageAlignVertically = true;
@@ -72,6 +79,7 @@ Game.States.Preloader.prototype = {
 		this.load.image('enemy1', 'assets/enemy1.png');
 		this.load.image('explosion', 'assets/explosion.png');
 		this.load.image('lives', 'assets/lives.png');
+		this.load.image('shield', 'assets/shield.png');
 
 		// Spritesheets
 		this.load.spritesheet('btnMenu', 'assets/btn-menu.png', 190, 49, 2);

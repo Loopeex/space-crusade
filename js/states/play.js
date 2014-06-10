@@ -16,6 +16,9 @@ Game.States.Play = function(game){
 	this.livesGroup;
 	this.livesNum;
 	this.livesTween;
+
+	this.score;
+	this.scoreText;
 };
 
 Game.States.Play.prototype = {
@@ -46,23 +49,28 @@ Game.States.Play.prototype = {
 		this.pausePanel = new Game.Prefabs.PausePanel(this.game);
 		this.game.add.existing(this.pausePanel);
 
-		// Enter play mode after init state
-		this.timerInit = this.game.time.create();
-		this.timerInit.add(Phaser.Timer.SECOND*1.5, this.initGame, this);
-		this.timerInit.start();
-
 		// Display lives
 		this.livesGroup = this.game.add.group();
 		this.livesGroup.add(this.game.add.sprite(0, 0, 'lives'));
 		this.livesGroup.add(this.game.add.sprite(20, 3, 'num', 0));
 		this.livesNum = this.game.add.sprite(35, 3, 'num', this.hero.lives+1);
 		this.livesGroup.add(this.livesNum);
-		this.livesGroup.x = 5;
-		this.livesGroup.y = 295;
+		this.livesGroup.x = this.game.width - 55;
+		this.livesGroup.y = 5;
 
+		// Score
+		this.score = 0;
+		this.scoreText = this.game.add.bitmapText(10, this.game.height - 27, 'kenpixelblocks', 'Score : 0', 16);
+
+		// Enter play mode after init state
+		this.timerInit = this.game.time.create(true);
+		this.timerInit.add(Phaser.Timer.SECOND*1.5, this.initGame, this);
+		this.timerInit.start();
+
+		// FPS
 		this.game.time.advancedTiming = true;
 	    this.fpsText = this.game.add.text(
-	        410, 10, '', { font: '16px Arial', fill: '#ffffff' }
+	        410, 290, '', { font: '16px Arial', fill: '#ffffff' }
 	    );
 	},
 
@@ -192,11 +200,12 @@ Game.States.Play.prototype = {
 		if(!enemy.dead && enemy.checkWorldBounds){
 			enemy.die();
 			bullet.kill();
+			this.updateScore();
 		}
 	},
 
 	killHero: function(hero, enemy){
-		if(!enemy.dead){
+		if(!enemy.dead && enemy.checkWorldBounds){
 			if(!this.hero.shielded){
 				// Update lives
 				this.hero.lives--;
@@ -218,6 +227,11 @@ Game.States.Play.prototype = {
 				enemy.die();
 			}
 		}
+	},
+
+	updateScore: function(){
+		this.score += 10;
+		this.scoreText.setText('Score : ' + this.score.toString());
 	},
 
 	gameOver: function(){

@@ -26,7 +26,7 @@ Game.States.Menu.prototype = {
 		this.btnPlay = this.game.add.button(0, 0, 'btnMenu', this.menuAnimOut, this, 1, 0, 1, 0);
 		this.btnPlayGroup.add(this.btnPlay);
 
-		this.btnPlayText = this.game.add.bitmapText(this.game.width/2, 10, 'kenpixelblocks', 'Play', 20);
+		this.btnPlayText = this.game.add.bitmapText(this.game.width/2, 12, 'kenpixelblocks', 'Play', 20);
 		this.btnPlayText.x = this.btnPlay.width/2 - this.btnPlayText.textWidth/2;
 		this.btnPlayGroup.add(this.btnPlayText);
 
@@ -40,7 +40,7 @@ Game.States.Menu.prototype = {
 		this.btnMore = this.game.add.button(0, 0, 'btnMenu', this.moreGames, this, 1, 0, 1, 0);
 		this.btnMoreGroup.add(this.btnMore);
 
-		this.btnMoreText = this.game.add.bitmapText(this.game.width/2, 10, 'kenpixelblocks', 'More games', 20);
+		this.btnMoreText = this.game.add.bitmapText(this.game.width/2, 12, 'kenpixelblocks', 'More games', 20);
 		this.btnMoreText.x = this.btnMore.width/2 - this.btnMoreText.textWidth/2;
 		this.btnMoreGroup.add(this.btnMoreText);
 
@@ -58,7 +58,6 @@ Game.States.Menu.prototype = {
 		this.game.add.tween(this.btnPlayGroup).to({alpha:0}, 600, Phaser.Easing.Exponential.Out, true);
 		this.game.add.tween(this.btnMoreGroup).to({alpha:0}, 600, Phaser.Easing.Exponential.Out, true);
 
-		//this.game.time.events.add(Phaser.Timer.SECOND*0.8, this.startGame, this);
 		this.timerInit = this.game.time.create(true);
 		this.timerInit.add(Phaser.Timer.SECOND*0.8, this.startGame, this);
 		this.timerInit.start();
