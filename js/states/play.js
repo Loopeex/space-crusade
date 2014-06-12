@@ -10,6 +10,8 @@ Game.States.Play = function(game){
 
 	this.enemies;
 	this.enemiesGenerator;
+	this.lasers;
+	this.lasersGenerator;
 
 	this.timerInit;
 
@@ -19,6 +21,8 @@ Game.States.Play = function(game){
 
 	this.score;
 	this.scoreText;
+
+	this.level;
 };
 
 Game.States.Play.prototype = {
@@ -35,6 +39,12 @@ Game.States.Play.prototype = {
 
 		// Enemies
 		this.enemies = this.game.add.group();
+
+		// Enemies lasers
+		this.lasers = this.game.add.group();
+
+		// Level
+		this.level = 1;
 
 		// Hero
 		this.hero = new Game.Prefabs.Hero(this.game, -45, this.game.height/2, this.game.input);
@@ -80,6 +90,7 @@ Game.States.Play.prototype = {
 		if(!Game.paused){
 			this.shootBullet();
 			this.checkCollisions();
+			//console.log(this.game.time.totalElapsedSeconds());
 		}
 
 		this.fpsText.setText(this.game.time.fps + ' FPS');
@@ -88,15 +99,17 @@ Game.States.Play.prototype = {
 	shutdown: function(){
 		this.bullets.destroy();
 		this.enemies.destroy();
+		this.lasers.destroy();
 		this.hero.destroy();
 		Game.paused = true;
 	},
 
 	initGame: function(){
 		// Generate enemies
-		this.generateEnemies();
-		this.enemiesGenerator = this.game.time.events.loop(Phaser.Timer.SECOND * 3, this.generateEnemies, this);
-		this.enemiesGenerator.timer.start();
+		this.enemiesGenerator = this.game.time.events.add(3000, this.generateEnemies, this);
+
+		// Generate enemies laser
+		this.lasersGenerator = this.game.time.events.add(1000, this.shootLaser, this);
 
 		// Play
 		this.playGame();
@@ -176,12 +189,33 @@ Game.States.Play.prototype = {
 	},
 
 	generateEnemies: function(){
-		var Enemies = this.enemies.getFirstExists(false);
+		var enemies = this.enemies.getFirstExists(false);
 
-		if(!Enemies){
-			Enemies = new Game.Prefabs.Enemies(this.game, this.enemies);
+		if(!enemies){
+			enemies = new Game.Prefabs.Enemies(this.game, this.enemies);
 		}
-		Enemies.reset(this.game.rnd.integerInRange(50, 270), this.game.rnd.integerInRange(50, 270));
+		enemies.reset(this.game.rnd.integerInRange(50, 270), this.game.rnd.integerInRange(50, 270));
+
+		// Relaunch timer depending on level
+		this.enemiesGenerator = this.game.time.events.add(this.game.rnd.integerInRange(12, 20)*250/this.level, this.generateEnemies, this);
+	},
+
+	shootLaser: function(){
+		var laser;
+		var enemy = this.enemies.getFirstExists(true);
+
+		if(enemy){
+			laser = this.lasers.getFirstExists(false);
+			if(!laser){
+				laser = new Game.Prefabs.Laser(this.game, 0, 0);
+				this.lasers.add(laser);
+			}
+			laser.reset(this.game.width + laser.width/2, this.game.rnd.integerInRange(20, this.game.height-20));
+			laser.reload(150);
+		}
+
+		// Relaunch bullet timer depending on level
+		this.lasersGenerator = this.game.time.events.add(this.game.rnd.integerInRange(12, 20)*500/this.level, this.shootLaser, this);
 	},
 
 	checkCollisions: function(){
@@ -194,6 +228,9 @@ Game.States.Play.prototype = {
 		this.enemies.forEach(function(enemy){
 			this.game.physics.arcade.overlap(this.hero, enemy, this.killHero, null, this);
 		}, this);
+
+		// Hero vs Lasers
+		this.game.physics.arcade.overlap(this.hero, this.lasers, this.killHero, null, this);
 	},
 
 	killEnemy: function(bullet, enemy){
@@ -205,7 +242,7 @@ Game.States.Play.prototype = {
 	},
 
 	killHero: function(hero, enemy){
-		if(!enemy.dead && enemy.checkWorldBounds){
+		if(enemy instanceof Game.Prefabs.Laser || (enemy instanceof Game.Prefabs.Enemy && !enemy.dead && enemy.checkWorldBounds)){
 			if(!this.hero.shielded){
 				// Update lives
 				this.hero.lives--;
@@ -232,6 +269,21 @@ Game.States.Play.prototype = {
 	updateScore: function(){
 		this.score += 10;
 		this.scoreText.setText('Score : ' + this.score.toString());
+
+		// Level depending on player score
+		if(this.score < 100){
+			this.changeLevel(1);
+		}else if(this.score < 250){
+			this.changeLevel(2);
+		}else if(this.score < 500){
+			this.changeLevel(3);
+		}
+	},
+
+	changeLevel: function(level){
+		if(this.level !== level){
+			this.level = level;
+		}
 	},
 
 	gameOver: function(){
