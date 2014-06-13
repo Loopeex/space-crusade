@@ -7,6 +7,8 @@ Game.States.Play = function(game){
 	this.btnPause;
 	this.pausePanel;
 
+	this.gameoverPanel;
+
 	this.bullets;
 	this.lastBulletShotAt;
 
@@ -27,6 +29,11 @@ Game.States.Play = function(game){
 	this.level;
 
 	this.bonus;
+
+	this.gameover;
+
+	this.juicy;
+	this.screenFlash;
 };
 
 Game.States.Play.prototype = {
@@ -53,6 +60,9 @@ Game.States.Play.prototype = {
 		// Level
 		this.level = 1;
 
+		// Gameover
+		this.gameover = false;
+
 		// Hero
 		this.hero = new Game.Prefabs.Hero(this.game, -45, this.game.height/2, this.game.input);
 		this.game.add.existing(this.hero);
@@ -66,6 +76,10 @@ Game.States.Play.prototype = {
 		this.pausePanel = new Game.Prefabs.PausePanel(this.game);
 		this.game.add.existing(this.pausePanel);
 
+		// Gameover panel
+		this.gameoverPanel = new Game.Prefabs.GameoverPanel(this.game);
+		this.game.add.existing(this.gameoverPanel);
+
 		// Display lives
 		this.livesGroup = this.game.add.group();
 		this.livesGroup.add(this.game.add.sprite(0, 0, 'lives'));
@@ -74,6 +88,11 @@ Game.States.Play.prototype = {
 		this.livesGroup.add(this.livesNum);
 		this.livesGroup.x = this.game.width - 55;
 		this.livesGroup.y = 5;
+
+		// Juicy
+		this.juicy = this.game.plugins.add(Phaser.Plugin.Juicy);
+		this.screenFlash = this.juicy.createScreenFlash();
+		this.add.existing(this.screenFlash);
 
 		// Score
 		this.score = 0;
@@ -140,9 +159,13 @@ Game.States.Play.prototype = {
 				laser.pause();
 			}, this);
 
-			// Show pause panel
-			this.pausePanel.show();
+			// Hide pause button
 			this.game.add.tween(this.btnPause).to({alpha:0}, 600, Phaser.Easing.Exponential.Out, true);
+
+			if(!this.gameover){
+				// Show pause panel
+				this.pausePanel.show();
+			}
 		}
 	},
 
@@ -262,6 +285,7 @@ Game.States.Play.prototype = {
 			if(!this.hero.shielded){
 				// Update lives
 				this.hero.lives--;
+				this.screenFlash.flash();
 
 				if(this.hero.lives < 1){
 					this.hero.die();
@@ -314,14 +338,16 @@ Game.States.Play.prototype = {
 		this.scoreText.setText('Score : ' + this.score.toString());
 
 		// Level depending on player score
-		if(this.score < 100){
+		if(this.score < 500){
 			this.changeLevel(1);
-		}else if(this.score < 250){
+		}else if(this.score < 1500){
 			this.changeLevel(2);
-		}else if(this.score < 500){
+		}else if(this.score < 3000){
 			this.changeLevel(3);
-		}else if(this.score < 800){
+		}else if(this.score < 5000){
 			this.changeLevel(4);
+		}else if(this.score < 10000){
+			this.changeLevel(5);
 		}
 	},
 
@@ -332,6 +358,23 @@ Game.States.Play.prototype = {
 	},
 
 	gameOver: function(){
-		this.game.state.start('Menu');
+		// Gamover
+		this.gameover = true;
+
+		// Shake screen
+		this.juicy.shake(20, 5);
+
+		// Kill hero
+		this.game.add.tween(this.hero).to({alpha:0}, 500, Phaser.Easing.Exponential.Out, true);
+
+		// Hide UI
+		this.scoreText.alpha = 0;
+		this.livesGroup.alpha = 0;
+
+		// Pause game
+		this.pauseGame();
+
+		// Show gameover panel
+		this.gameoverPanel.show(this.score);
 	}
 };

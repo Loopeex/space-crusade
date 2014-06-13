@@ -10,6 +10,7 @@ module.exports = function(grunt){
     dist_dir: 'game/',
 
     gamejs: [
+      'js/lib/Juicy.js',
    	  'js/states/load.js',
    	  'js/states/menu.js',
    	  'js/states/play.js',

@@ -96,7 +96,7 @@ Phaser.Plugin.Juicy.ScreenFlash.prototype.constructor = Phaser.Plugin.Juicy.Scre
 Phaser.Plugin.Juicy.ScreenFlash.prototype.flash = function(maxAlpha, duration) {
   maxAlpha = maxAlpha || 1;
   duration = duration || 100;
-  var flashTween = this.game.add.tween(this).to({alpha: maxAlpha}, 100, Phaser.Easing.Bounce.InOut, true,0, 0, true);
+  var flashTween = this.game.add.tween(this).to({alpha: maxAlpha}, duration, Phaser.Easing.Bounce.InOut, true,0, 0, true);
   flashTween.onComplete.add(function() {
     this.alpha = 0;
   }, this);

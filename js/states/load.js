@@ -1,4 +1,4 @@
-Game = {
+var Game = {
 	orientated: true,
 	backgroundX: 0,
 	backgroundY: 0,
@@ -98,8 +98,7 @@ Game.States.Preloader.prototype = {
 
 	update: function(){
 		if(this.ready){
-			//this.game.state.start('Menu');
-			this.game.state.start('Play');
+			this.game.state.start('Menu');
 		}
 	},
 
