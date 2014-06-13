@@ -19,12 +19,12 @@ Game.Prefabs.PausePanel = function(game, parent){
 	this.alpha = 0;
 
 	// Play button
-	this.btnPlay = this.game.add.button(this.game.width/2-30, 15, 'btn', this.unPause, this, 3, 2, 3, 2);
+	this.btnPlay = this.game.add.button(this.game.width/2-32, 15, 'btn', this.unPause, this, 3, 2, 3, 2);
 	this.btnPlay.anchor.setTo(0.5, 0);
 	this.add(this.btnPlay);
 
 	// Btn Menu
-	this.btnMenu = this.game.add.button(this.game.width/2+30, 15, 'btn', function(){
+	this.btnMenu = this.game.add.button(this.game.width/2+28, 15, 'btn', function(){
 		this.game.state.getCurrentState().goToMenu();
 	}, this, 5, 4, 5, 4);
 	this.btnMenu.anchor.setTo(0.5, 0);

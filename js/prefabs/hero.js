@@ -106,7 +106,3 @@ Game.Prefabs.Hero.prototype.disabledDoubleShoot = function(){
 	// Shield anim
 	this.numBullets = 1;
 };
-
-Game.Prefabs.Hero.prototype.die = function(){
-
-};

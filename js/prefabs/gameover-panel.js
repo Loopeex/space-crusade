@@ -29,12 +29,12 @@ Game.Prefabs.GameoverPanel = function(game, parent){
 	this.alpha = 0;
 
 	// Play button
-	this.btnReplay = this.game.add.button(this.game.width/2-30, 15, 'btn', this.replay, this, 3, 2, 3, 2);
+	this.btnReplay = this.game.add.button(this.game.width/2-32, 15, 'btn', this.replay, this, 3, 2, 3, 2);
 	this.btnReplay.anchor.setTo(0.5, 0);
 	this.add(this.btnReplay);
 
 	// Btn Menu
-	this.btnMenu = this.game.add.button(this.game.width/2+30, 15, 'btn', function(){
+	this.btnMenu = this.game.add.button(this.game.width/2+28, 15, 'btn', function(){
 		this.game.state.getCurrentState().goToMenu();
 	}, this, 5, 4, 5, 4);
 	this.btnMenu.anchor.setTo(0.5, 0);
@@ -46,6 +46,9 @@ Game.Prefabs.GameoverPanel.constructor = Game.Prefabs.GameoverPanel;
 
 Game.Prefabs.GameoverPanel.prototype.show = function(score){
 	var highScore;
+	var beated = false;
+	localStorage.setItem('highScore', 0);
+
 	this.textScore.setText('Score : ' + score.toString());
 
 	if(!!localStorage){
@@ -56,13 +59,12 @@ Game.Prefabs.GameoverPanel.prototype.show = function(score){
 			localStorage.setItem('highScore', highScore);
 
 			// Add new sprite if best score beated
-			/*
 			if(score > 0){
-				this.newScore = this.game.add.sprite(this.game.width/2+13, 213, 'newBest');
+				beated = true;
+				this.newScore = this.game.add.sprite(0, 132, 'new');
 				this.newScore.anchor.setTo(0.5, 0.5);
 				this.add(this.newScore);
 			}
-			*/
 		}
 	}else{
 		highScore = 0;
@@ -77,10 +79,19 @@ Game.Prefabs.GameoverPanel.prototype.show = function(score){
 	this.textHighScore.updateText();
 	this.textHighScore.position.x = this.game.width/2 - this.textHighScore.textWidth/2;
 
+	if(beated){
+		this.newScore.x = this.textHighScore.position.x - 30;
+	}
+
 	// Show panel
 	this.game.add.tween(this).to({alpha:1, y:this.game.height/2 - this.panel.height/2}, 1000, Phaser.Easing.Exponential.Out, true, 0);
 };
 
 Game.Prefabs.GameoverPanel.prototype.replay = function(){
+	// Track analytics
+	Game.Analytics.trackEvent('Start', 1);
+	Game.Analytics.trackEvent('Restart', 1);
+
+	// Start
 	this.game.state.start('Play');
 };

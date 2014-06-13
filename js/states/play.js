@@ -88,6 +88,7 @@ Game.States.Play.prototype = {
 		this.livesGroup.add(this.livesNum);
 		this.livesGroup.x = this.game.width - 55;
 		this.livesGroup.y = 5;
+		this.livesGroup.alpha = 0;
 
 		// Juicy
 		this.juicy = this.game.plugins.add(Phaser.Plugin.Juicy);
@@ -97,6 +98,7 @@ Game.States.Play.prototype = {
 		// Score
 		this.score = 0;
 		this.scoreText = this.game.add.bitmapText(10, this.game.height - 27, 'kenpixelblocks', 'Score : 0', 16);
+		this.scoreText.alpha = 0;
 
 		// Enter play mode after init state
 		this.timerInit = this.game.time.create(true);
@@ -116,7 +118,6 @@ Game.States.Play.prototype = {
 		if(!Game.paused){
 			this.shootBullet();
 			this.checkCollisions();
-			//console.log(this.game.time.totalElapsedSeconds());
 		}
 
 		this.fpsText.setText(this.game.time.fps + ' FPS');
@@ -127,6 +128,8 @@ Game.States.Play.prototype = {
 		this.enemies.destroy();
 		this.lasers.destroy();
 		this.hero.destroy();
+		this.pausePanel.destroy();
+		this.gameoverPanel.destroy();
 		Game.paused = true;
 	},
 
@@ -136,6 +139,13 @@ Game.States.Play.prototype = {
 
 		// Generate enemies laser
 		this.lasersGenerator = this.game.time.events.add(1000, this.shootLaser, this);
+
+		// Track analytics
+		Game.Analytics.trackEvent('Start', 1);
+
+		// Show UI
+		this.game.add.tween(this.livesGroup).to({alpha:1}, 600, Phaser.Easing.Exponential.Out, true);
+		this.game.add.tween(this.scoreText).to({alpha:1}, 600, Phaser.Easing.Exponential.Out, true);
 
 		// Play
 		this.playGame();
@@ -234,6 +244,7 @@ Game.States.Play.prototype = {
 		if(!enemies){
 			enemies = new Game.Prefabs.Enemies(this.game, this.enemies);
 		}
+		// reset(fromY, toY, speed)
 		enemies.reset(this.game.rnd.integerInRange(50, 270), this.game.rnd.integerInRange(50, 270), 150 + this.level*10 + this.game.rnd.integerInRange(0, 10));
 
 		// Relaunch timer depending on level
@@ -288,7 +299,6 @@ Game.States.Play.prototype = {
 				this.screenFlash.flash();
 
 				if(this.hero.lives < 1){
-					this.hero.die();
 					this.gameOver();
 				}else{
 					this.hero.enableShield(2);
@@ -376,5 +386,8 @@ Game.States.Play.prototype = {
 
 		// Show gameover panel
 		this.gameoverPanel.show(this.score);
+
+		// Track analytics
+		Game.Analytics.trackEvent('Score', this.score);
 	}
 };

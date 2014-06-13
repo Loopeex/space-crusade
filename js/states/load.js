@@ -1,11 +1,24 @@
 var Game = {
+	name: 'Space Crusade',
 	orientated: true,
 	backgroundX: 0,
 	backgroundY: 0,
 	paused: true,
 
 	States: {},
-	Prefabs: {}
+	Prefabs: {},
+
+	Analytics: {
+		active: false,
+		category: 'Game',
+
+		trackEvent: function(label, value){
+			if(Game.Analytics.active){
+				console.log('ok');
+				ga('send', 'event', Game.Analytics.category, Game.name, label, value);
+			}
+		}
+	}
 };
 
 Game.States.Boot = function(game){
@@ -14,7 +27,7 @@ Game.States.Boot = function(game){
 Game.States.Boot.prototype = {
 	preload: function(){
 		this.load.image('background', 'assets/background.png');
-		this.load.image('preloader', 'assets/preloader.gif');
+		this.load.image('preloader', 'assets/preloader.png');
 	},
 
 	create: function(){
@@ -73,6 +86,7 @@ Game.States.Preloader.prototype = {
 		this.load.onLoadComplete.addOnce(this.onLoadComplete, this);
 
 		// Images
+		this.load.image('title', 'assets/title.png');
 		this.load.image('hero', 'assets/hero.png');
 		this.load.image('pausePanel', 'assets/pause-panel.png');
 		this.load.image('enemy1', 'assets/enemy1.png');
@@ -81,6 +95,7 @@ Game.States.Preloader.prototype = {
 		this.load.image('shield', 'assets/shield.png');
 		this.load.image('bullet', 'assets/bullet.png');
 		this.load.image('laser', 'assets/laser.png');
+		this.load.image('new', 'assets/new.png');
 
 		// Spritesheets
 		this.load.spritesheet('btnMenu', 'assets/btn-menu.png', 190, 49, 2);

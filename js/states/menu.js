@@ -9,6 +9,8 @@ Game.States.Menu = function(game){
 	this.btnMore;
 	this.btnMoreText;
 
+	this.title;
+
 	this.timerInit;
 };
 
@@ -48,15 +50,22 @@ Game.States.Menu.prototype = {
 		this.btnMoreGroup.y = 250;
 		this.btnMoreGroup.alpha = 0;
 
+		// Title
+		this.title = this.game.add.sprite(this.game.width/2, 0, 'title');
+		this.title.anchor.setTo(0.5, 0);
+		this.title.alpha = 0;
+
 		// Tween
 		this.game.add.tween(this.btnPlayGroup).to({alpha:1, y: 150}, 600, Phaser.Easing.Exponential.Out, true);
 		this.game.add.tween(this.btnMoreGroup).to({alpha:1, y: 210}, 600, Phaser.Easing.Exponential.Out, true, 200);
+		this.game.add.tween(this.title).to({alpha: 1, y:40}, 600, Phaser.Easing.Exponential.Out, true);
 	},
 
 	menuAnimOut: function(){
 		// Tween
 		this.game.add.tween(this.btnPlayGroup).to({alpha:0}, 600, Phaser.Easing.Exponential.Out, true);
 		this.game.add.tween(this.btnMoreGroup).to({alpha:0}, 600, Phaser.Easing.Exponential.Out, true);
+		this.game.add.tween(this.title).to({alpha: 0, y:10}, 600, Phaser.Easing.Exponential.Out, true);
 
 		this.timerInit = this.game.time.create(true);
 		this.timerInit.add(Phaser.Timer.SECOND*0.8, this.startGame, this);
