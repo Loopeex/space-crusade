@@ -211,7 +211,7 @@ Game.States.Play.prototype = {
 		if(!enemies){
 			enemies = new Game.Prefabs.Enemies(this.game, this.enemies);
 		}
-		enemies.reset(this.game.rnd.integerInRange(50, 270), this.game.rnd.integerInRange(50, 270));
+		enemies.reset(this.game.rnd.integerInRange(50, 270), this.game.rnd.integerInRange(50, 270), 150 + this.level*10 + this.game.rnd.integerInRange(0, 10));
 
 		// Relaunch timer depending on level
 		this.enemiesGenerator = this.game.time.events.add(this.game.rnd.integerInRange(12, 20)*250/this.level, this.generateEnemies, this);
@@ -225,7 +225,7 @@ Game.States.Play.prototype = {
 			this.lasers.add(laser);
 		}
 		laser.reset(this.game.width + laser.width/2, this.game.rnd.integerInRange(20, this.game.height-20));
-		laser.reload(150);
+		laser.reload(100 + this.level*30);
 
 		// Relaunch bullet timer depending on level
 		this.lasersGenerator = this.game.time.events.add(this.game.rnd.integerInRange(12, 20)*500/this.level, this.shootLaser, this);
@@ -277,7 +277,7 @@ Game.States.Play.prototype = {
 					}, this);
 				}
 			}else{
-				enemy.die();
+				enemy.die(true);	// Like an autokill if killed with shield : no bonus
 			}
 		}
 	},
@@ -296,7 +296,7 @@ Game.States.Play.prototype = {
 
 	activeBonus: function(hero, bonus){
 		bonus.kill();
-		console.log(bonus.type);
+
 		switch(bonus.type){
 			case 1: 
 				// Double shoot
@@ -320,6 +320,8 @@ Game.States.Play.prototype = {
 			this.changeLevel(2);
 		}else if(this.score < 500){
 			this.changeLevel(3);
+		}else if(this.score < 800){
+			this.changeLevel(4);
 		}
 	},
 

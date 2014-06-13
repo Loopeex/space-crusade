@@ -3,7 +3,7 @@ Game.Prefabs.Enemy = function(game, x, y, type, target){
 	Phaser.Sprite.call(this, game, x, y, type);
 
 	// Speed
-	this.speed = 200;
+	this.speed = 150;
 
 	// Target
 	this.target = target;
@@ -80,11 +80,12 @@ Game.Prefabs.Enemy.prototype.pause = function(){
 	this.body.velocity.y = 0;
 };
 
-Game.Prefabs.Enemy.prototype.reload = function(i, from){
+Game.Prefabs.Enemy.prototype.reload = function(i, from, speed){
 	this.x = this.game.width + this.width/2 + i*(this.width + 10);
 	this.checkWorldBounds = false;
 	this.dead = false;
 	this.alpha = 1;
+	this.speed = speed;
 	this.y = from;
 };
 

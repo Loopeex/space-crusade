@@ -23,7 +23,7 @@ Game.Prefabs.Enemies.prototype.update = function(){
 	this.callAll('update');
 };
 
-Game.Prefabs.Enemies.prototype.reset = function(from, to){
+Game.Prefabs.Enemies.prototype.reset = function(from, to, speed){
 	this.exists = true;
 	this.livingEnemies = 5;
 	this.killedAll = true;
@@ -35,7 +35,7 @@ Game.Prefabs.Enemies.prototype.reset = function(from, to){
 			enemy.resetTarget(to);
 		}
 
-		enemy.reload(i, from);
+		enemy.reload(i, from, speed);
 		i++;
 	}, this);
 };

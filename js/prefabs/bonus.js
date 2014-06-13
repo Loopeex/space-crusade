@@ -21,7 +21,7 @@ Game.Prefabs.Bonus.constructor = Game.Prefabs.Bonus;
 
 Game.Prefabs.Bonus.prototype.update = function(){
 	if(!Game.paused){
-		this.body.velocity.x = -150;
+		this.body.velocity.x = -100;
 	}else{
 		this.body.velocity.x = 0;
 	}
