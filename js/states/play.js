@@ -1,4 +1,6 @@
 Game.States.Play = function(game){
+	this.BONUS_DURATION = 6; // In seconds
+
 	this.background;
 	this.hero;
 
@@ -23,6 +25,8 @@ Game.States.Play = function(game){
 	this.scoreText;
 
 	this.level;
+
+	this.bonus;
 };
 
 Game.States.Play.prototype = {
@@ -42,6 +46,9 @@ Game.States.Play.prototype = {
 
 		// Enemies lasers
 		this.lasers = this.game.add.group();
+
+		// Bonus
+		this.bonus = this.game.add.group();
 
 		// Level
 		this.level = 1;
@@ -128,6 +135,11 @@ Game.States.Play.prototype = {
 				group.callAll('pause');
 			}, this);
 
+			// Freeze lasers rotation
+			this.lasers.forEach(function(laser){
+				laser.pause();
+			}, this);
+
 			// Show pause panel
 			this.pausePanel.show();
 			this.game.add.tween(this.btnPause).to({alpha:0}, 600, Phaser.Easing.Exponential.Out, true);
@@ -144,6 +156,11 @@ Game.States.Play.prototype = {
 
 			// Resume enemies generator
 			this.enemiesGenerator.timer.resume();
+
+			// Active lasers rotation
+			this.lasers.forEach(function(laser){
+				laser.resume();
+			}, this);
 
 			// Restart follow position
 			this.game.input.x = this.hero.x;
@@ -201,18 +218,14 @@ Game.States.Play.prototype = {
 	},
 
 	shootLaser: function(){
-		var laser;
-		var enemy = this.enemies.getFirstExists(true);
+		var laser = this.lasers.getFirstExists(false);
 
-		if(enemy){
-			laser = this.lasers.getFirstExists(false);
-			if(!laser){
-				laser = new Game.Prefabs.Laser(this.game, 0, 0);
-				this.lasers.add(laser);
-			}
-			laser.reset(this.game.width + laser.width/2, this.game.rnd.integerInRange(20, this.game.height-20));
-			laser.reload(150);
+		if(!laser){
+			laser = new Game.Prefabs.Laser(this.game, 0, 0);
+			this.lasers.add(laser);
 		}
+		laser.reset(this.game.width + laser.width/2, this.game.rnd.integerInRange(20, this.game.height-20));
+		laser.reload(150);
 
 		// Relaunch bullet timer depending on level
 		this.lasersGenerator = this.game.time.events.add(this.game.rnd.integerInRange(12, 20)*500/this.level, this.shootLaser, this);
@@ -231,6 +244,9 @@ Game.States.Play.prototype = {
 
 		// Hero vs Lasers
 		this.game.physics.arcade.overlap(this.hero, this.lasers, this.killHero, null, this);
+
+		// Hero vs Bonus
+		this.game.physics.arcade.overlap(this.hero, this.bonus, this.activeBonus, null, this);
 	},
 
 	killEnemy: function(bullet, enemy){
@@ -251,7 +267,7 @@ Game.States.Play.prototype = {
 					this.hero.die();
 					this.gameOver();
 				}else{
-					this.hero.enableShield();
+					this.hero.enableShield(2);
 
 					// Anim remaining lives
 					this.game.add.tween(this.livesNum).to({alpha:0, y: 8}, 200, Phaser.Easing.Exponential.Out, true).onComplete.add(function(){
@@ -263,6 +279,33 @@ Game.States.Play.prototype = {
 			}else{
 				enemy.die();
 			}
+		}
+	},
+
+	addBonus: function(enemy){
+		var bonus = this.bonus.getFirstDead();
+		var type = this.game.rnd.integerInRange(0, 1);
+		
+		if(!bonus){
+			bonus = new Game.Prefabs.Bonus(this.game, 0, 0, type);
+			this.bonus.add(bonus);
+		}
+
+		bonus.reload(enemy.x, enemy.y, type);
+	},
+
+	activeBonus: function(hero, bonus){
+		bonus.kill();
+		console.log(bonus.type);
+		switch(bonus.type){
+			case 1: 
+				// Double shoot
+				hero.enableDoubleShoot(this.BONUS_DURATION);
+				break;
+			default:
+				// Shield
+				hero.enableShield(this.BONUS_DURATION);
+				break;
 		}
 	},
 

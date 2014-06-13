@@ -2,6 +2,12 @@ Game.Prefabs.Enemies = function(game, parent){
 	// Super call to Phaser.Group
 	Phaser.Group.call(this, game, parent);
 
+	// Count living enemies
+	this.livingEnemies = 5;
+
+	// Switch if kery killed all enemies of the group
+	this.killedAll = true;
+
 	var enemy;
 	for(var i=0; i<5; i++){
 		enemy = this.add(new Game.Prefabs.Enemy(this.game, 0, 0, 'enemy1', enemy || new Phaser.Point(0, 0)));
@@ -15,11 +21,12 @@ Game.Prefabs.Enemies.constructor = Game.Prefabs.Enemies;
 
 Game.Prefabs.Enemies.prototype.update = function(){
 	this.callAll('update');
-	this.checkWorldBounds();
 };
 
 Game.Prefabs.Enemies.prototype.reset = function(from, to){
 	this.exists = true;
+	this.livingEnemies = 5;
+	this.killedAll = true;
 
 	// Reset all enemies
 	var i = 0;
@@ -33,16 +40,23 @@ Game.Prefabs.Enemies.prototype.reset = function(from, to){
 	}, this);
 };
 
-Game.Prefabs.Enemies.prototype.checkWorldBounds = function(){
-	// Check if an enemy is still alive
-	var groupAlive = false;
-	this.forEach(function(enemy){
-		if(!enemy.dead){
-			groupAlive = true;
-		}
-	}, this);
+Game.Prefabs.Enemies.prototype.updateStatus = function(enemy, autoKill){
+	this.livingEnemies--;
 
-	if(!groupAlive){
+	if(autoKill){
+		this.killedAll = false;
+	}
+
+	if(this.livingEnemies === 0){
 		this.exists = false;
+
+		// Randomly activate a bonus if killed all the enemies
+		if(this.killedAll){
+			var rdm = this.game.rnd.integerInRange(1, 4);
+			
+			if(rdm === 1){
+				this.game.state.getCurrentState().addBonus(enemy);
+			}
+		}
 	}
 };

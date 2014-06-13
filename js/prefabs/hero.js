@@ -19,6 +19,7 @@ Game.Prefabs.Hero = function(game, x, y, target){
 
 	// Number of bullets per shoot
 	this.numBullets = 1;
+	this.timerBullet;
 
 	// Hero shiled
 	this.shielded = false;
@@ -66,10 +67,15 @@ Game.Prefabs.Hero.prototype.update = function(){
 	}
 };
 
-Game.Prefabs.Hero.prototype.enableShield = function(){
+Game.Prefabs.Hero.prototype.enableShield = function(duration){
 	this.shielded = true;
+
+	if(this.timerShield && !this.timerShield.expired){
+		this.timerShield.destroy();
+	}
+
 	this.timerShield = this.game.time.create(true);
-	this.timerShield.add(Phaser.Timer.SECOND*2, this.disabledShield, this);
+	this.timerShield.add(Phaser.Timer.SECOND*duration, this.disabledShield, this);
 	this.timerShield.start();
 
 	// Shield anim
@@ -82,6 +88,23 @@ Game.Prefabs.Hero.prototype.disabledShield = function(){
 	.to({alpha:0}, 200, Phaser.Easing.Linear.NONE, true, 0, 6, true).onComplete.add(function(){
 		this.shielded = false;
 	}, this);
+};
+
+Game.Prefabs.Hero.prototype.enableDoubleShoot = function(duration){
+	this.numBullets = 2;
+
+	if(this.timerBullet && !this.timerBullet.expired){
+		this.timerBullet.destroy();
+	}
+	
+	this.timerBullet = this.game.time.create(true);
+	this.timerBullet.add(Phaser.Timer.SECOND*duration, this.disabledDoubleShoot, this);
+	this.timerBullet.start();
+};
+
+Game.Prefabs.Hero.prototype.disabledDoubleShoot = function(){
+	// Shield anim
+	this.numBullets = 1;
 };
 
 Game.Prefabs.Hero.prototype.die = function(){

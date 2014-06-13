@@ -73,7 +73,6 @@ Game.States.Preloader.prototype = {
 		this.load.onLoadComplete.addOnce(this.onLoadComplete, this);
 
 		// Images
-		this.load.image('cursor', 'assets/cursor.png');
 		this.load.image('hero', 'assets/hero.png');
 		this.load.image('pausePanel', 'assets/pause-panel.png');
 		this.load.image('enemy1', 'assets/enemy1.png');
@@ -87,6 +86,7 @@ Game.States.Preloader.prototype = {
 		this.load.spritesheet('btnMenu', 'assets/btn-menu.png', 190, 49, 2);
 		this.load.spritesheet('btn', 'assets/btn.png', 49, 49, 6);
 		this.load.spritesheet('num', 'assets/num.png', 12, 11, 5);
+		this.load.spritesheet('bonus', 'assets/bonus.png', 16, 16, 2);
 
 		// Fonts
 		this.load.bitmapFont('kenpixelblocks', 'assets/fonts/kenpixelblocks.png', 'assets/fonts/kenpixelblocks.fnt');

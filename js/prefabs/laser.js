@@ -5,10 +5,6 @@ Game.Prefabs.Laser = function(game, x, y){
 	// Centered anchor
 	this.anchor.setTo(0.5, 0.5);
 
-	// Save vars for velocity when game is pauses
-	this.savedVelocityX = 0;
-	this.savedVelocityY = 0;
-
 	// Speed
 	this.speed = 150;
 
@@ -19,7 +15,7 @@ Game.Prefabs.Laser = function(game, x, y){
 	// Enable physics
 	this.game.physics.enable(this, Phaser.Physics.ARCADE);
 
-	this.game.add.tween(this).to({angle:-360}, 3000, Phaser.Easing.Linear.NONE, true, 0, Number.POSITIVE_INFINITY);
+	this.tween = this.game.add.tween(this).to({angle:-360}, 3000, Phaser.Easing.Linear.NONE, true, 0, Number.POSITIVE_INFINITY);
 }
 
 Game.Prefabs.Laser.prototype = Object.create(Phaser.Sprite.prototype);
@@ -43,4 +39,12 @@ Game.Prefabs.Laser.prototype.reload = function(speed){
 Game.Prefabs.Laser.prototype.die = function(){
 	this.game.add.tween(this).to({alpha: 0}, 150, Phaser.Easing.Cubic.Out, true, 0);
 	this.game.add.tween(this.scale).to({x:1.5, y:1.5}, 150, Phaser.Easing.Cubic.Out, true, 0);
+};
+
+Game.Prefabs.Laser.prototype.pause = function(){
+	this.tween.pause();
+};
+
+Game.Prefabs.Laser.prototype.resume = function(){
+	this.tween.resume();
 };

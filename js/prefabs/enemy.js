@@ -24,7 +24,9 @@ Game.Prefabs.Enemy = function(game, x, y, type, target){
     this.game.physics.enable(this, Phaser.Physics.ARCADE);
 
     // Out of bounds callback
-    this.events.onOutOfBounds.add(this.die, this);
+    this.events.onOutOfBounds.add(function(){
+    	this.die(true);
+    }, this);
 }
 
 Game.Prefabs.Enemy.prototype = Object.create(Phaser.Sprite.prototype);
@@ -52,18 +54,25 @@ Game.Prefabs.Enemy.prototype.update = function(){
 	}
 };
 
-Game.Prefabs.Enemy.prototype.die = function(){
-	this.dead = true;
-	this.alpha = 0;
+Game.Prefabs.Enemy.prototype.die = function(autoKill){
+	if(!this.dead){
+		this.dead = true;
+		this.alpha = 0;
 
-	// Explosion
-	this.explosion.reset(this.x, this.y);
-	this.explosion.angle = this.game.rnd.integerInRange(0, 360);
-	this.explosion.alpha = 0;
-	this.explosion.scale.x = 0.2;
-	this.explosion.scale.y = 0.2;
-	this.game.add.tween(this.explosion).to({alpha: 1, angle: "+30"}, 200, Phaser.Easing.Linear.NONE, true, 0).to({alpha: 0, angle: "+30"}, 300, Phaser.Easing.Linear.NONE, true, 0);
-	this.game.add.tween(this.explosion.scale).to({x:1.5, y:1.5}, 500, Phaser.Easing.Cubic.Out, true, 0);
+		// Explosion
+		if(!autoKill){
+			this.explosion.reset(this.x, this.y);
+			this.explosion.angle = this.game.rnd.integerInRange(0, 360);
+			this.explosion.alpha = 0;
+			this.explosion.scale.x = 0.2;
+			this.explosion.scale.y = 0.2;
+			this.game.add.tween(this.explosion).to({alpha: 1, angle: "+30"}, 200, Phaser.Easing.Linear.NONE, true, 0).to({alpha: 0, angle: "+30"}, 300, Phaser.Easing.Linear.NONE, true, 0);
+			this.game.add.tween(this.explosion.scale).to({x:1.5, y:1.5}, 500, Phaser.Easing.Cubic.Out, true, 0);
+		}
+
+		// Update parent group
+		this.parent.updateStatus(this, autoKill);
+	}
 };
 
 Game.Prefabs.Enemy.prototype.pause = function(){
