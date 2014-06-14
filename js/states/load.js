@@ -9,12 +9,11 @@ var Game = {
 	Prefabs: {},
 
 	Analytics: {
-		active: false,
+		active: true,
 		category: 'Game',
 
 		trackEvent: function(label, value){
 			if(Game.Analytics.active){
-				console.log('ok');
 				ga('send', 'event', Game.Analytics.category, Game.name, label, value);
 			}
 		}
