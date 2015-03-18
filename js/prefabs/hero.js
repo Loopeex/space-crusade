@@ -65,6 +65,16 @@ Game.Prefabs.Hero.prototype.update = function(){
 		this.shield.x = this.x;
 		this.shield.y = this.y;
 	}
+
+	//Check for paused and shield is active
+	if(Game.paused && this.shielded) {
+		this.timerShield.pause();
+		console.log("Paused the sheild timer");
+	}
+	else if(!Game.paused && this.shielded && this.timerShield.paused) {
+		this.timerShield.resume();
+		console.log("Resuming shield timer");
+	}
 };
 
 Game.Prefabs.Hero.prototype.enableShield = function(duration){
